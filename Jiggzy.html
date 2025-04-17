@@ -52,18 +52,26 @@ header span {
   text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3); 
 }
 
-#timer {
+#menuTimerWrapper {
   display: flex;
-  margin-left: 17%;
-  width: 77%;
-  justify-content: center;
   align-items: center;
-  margin-top: 5px;
+  top: -50px;
+  width: 100%;
+  position: relative;
+}
+
+#timer {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  height: 60px;
   background-color: #333;
-  gap: 10px;
-  padding: 4px;
   border-radius: 8px;
+  padding: 0 20px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  flex-grow: 1;
+  margin-left: 20px;
 }
 
 #timer h2 {
@@ -84,14 +92,11 @@ header span {
 /* Menu */
 #menu {
   list-style-type: none;
-  padding: 15px;
-  background: linear-gradient(135deg, #333333, #444444);
-  border-radius: 12px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+  padding: 0px;
   position: absolute;
-  top: 0px;
-  left: 10px;
-  width: 220px;
+  top: -7px;
+  left: 30px;
+  width: 15%;
   z-index: 1000;
   transition: all 0.3s ease;
   animation: slideIn 0.5s ease-out;
@@ -114,7 +119,7 @@ header span {
   text-align: center;
   position: relative;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+  box-shadow: 2 5px 6px rgba(0, 0, 0, 0.3);
 }
 
 #menu li:hover {
@@ -309,6 +314,7 @@ header span {
 
 /* Responsiveness */
 @media (max-width: 768px) {
+
   #menu {
     position: relative;
     top: unset;
@@ -369,40 +375,43 @@ header span {
 </style>
 <body>
     <header></header>
+    <div id="menuTimerWrapper">
+            <!-- Menu -->
+            <ul id="menu">
+              <li>&#x2630;</li>
+              <li>default image</li>
+              <li>load image</li>
+              <li>shape: 
+                  <select id="shape">
+                      <option value="1" selected>classic</option>
+                      <option value="2">triangle</option>
+                      <option value="3">round</option>
+                      <option value="4">straight</option>
+                  </select>
+              </li>
+              <li>12 pieces</li>
+              <li>25 pieces</li>
+              <li>50 pieces</li>
+              <li>100 pieces</li>
+              <li>200 pieces</li>
+              <li>500 pieces</li>
+              <li>1000 pieces</li>
+            </ul>
         <!-- Timer Section (as Hidden , not working!) -->
         <div id="timer" hidden>
             <button id="pauseResumeButton">Pause</button>
             <h2>Time: 
                 <span id="timerValue">00:00</span>
-                <span id="title">JigzZy v1</span>
+                <span id="title"></span>
             </h2>
         </div>
+      </div>
     
 
     <!-- Puzzle Container -->
     <div id="forPuzzle"></div>
 
-    <!-- Menu -->
-    <ul id="menu">
-        <li>&#x2630;</li>
-        <li>default image</li>
-        <li>load image</li>
-        <li>shape: 
-            <select id="shape">
-                <option value="1" selected>classic</option>
-                <option value="2">triangle</option>
-                <option value="3">round</option>
-                <option value="4">straight</option>
-            </select>
-        </li>
-        <li>12 pieces</li>
-        <li>25 pieces</li>
-        <li>50 pieces</li>
-        <li>100 pieces</li>
-        <li>200 pieces</li>
-        <li>500 pieces</li>
-        <li>1000 pieces</li>
-    </ul>
+
     <script>
         "use strict";
 
@@ -1558,7 +1567,11 @@ let loadFile;
 } //  // scope for loadFile
 
 function loadInitialFile() {
-  puzzle.srcImage.src = "https://i.ibb.co/30mzjd4/default-Puzzle.jpg";
+  if (!puzzle.srcImage || !puzzle.srcImage.src || puzzle.srcImage.src.includes("default-Puzzle.jpg")) {
+    puzzle.srcImage.src = "https://i.ibb.co/30mzjd4/default-Puzzle.jpg";
+  } else {
+    console.log("✅ Custom image already set, skipping default.");
+  }
 }
 //-----------------------------------------------------------------------------
 function imageLoaded(puzzle) {
@@ -1865,8 +1878,10 @@ window.addEventListener("resize", event => {
 
 puzzle = new Puzzle({ container: "forPuzzle" });
 autoStart = isMiniature(); 
-
-loadInitialFile();
+window.fromMapImage = true;
+if (!window.fromMapImage) {
+  loadInitialFile();
+}
 requestAnimationFrame(animate);
 // timer : 
 document.addEventListener("DOMContentLoaded", function () {
@@ -1930,8 +1945,119 @@ document.addEventListener("DOMContentLoaded", function () {
             startTimer(); // If the timer is paused > start (Resume)
         }
     });
+
+    
+    const pieces = getUrlParameter('pieces');
+    
+    if (pieces) {
+      const menuItems = document.querySelectorAll('#menu li');
+      menuItems.forEach(li => {
+        if (li.textContent.includes(pieces + ' pieces')) {
+          li.classList.add('active'); // for visual cue
+          li.click?.(); // simulate selection if needed
+        }
+      });
+    }
+    
 });
-    </script>
+</script>
+<script>
+
+function getUrlParameter(name) {
+  name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
+  const regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
+  const results = regex.exec(location.search);
+  return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  const imageUrl = getUrlParameter('imageUrl');
+  const pieces = parseInt(getUrlParameter('pieces')) || 100;
+  const shape = getUrlParameter('shape') || "1";
+
+  if (!imageUrl) {
+    console.warn("❌ No imageUrl provided.");
+    return;
+  }
+
+  const img = new Image();
+  img.crossOrigin = "Anonymous";
+  img.src = imageUrl;
+
+  img.onload = () => {
+    console.log("✅ Image loaded:", imageUrl);
+
+    // Set shape selection in dropdown (visual only)
+    const shapeSelect = document.getElementById("shape");
+    if (shapeSelect) {
+      shapeSelect.value = shape;
+    }
+
+    // Highlight the selected piece count in menu
+    const menuItems = document.querySelectorAll('#menu li');
+    menuItems.forEach(li => {
+      if (li.textContent.includes(pieces + ' pieces')) {
+        li.classList.add("active");
+      }
+    });
+
+    // Now build the puzzle
+    const container = document.getElementById("forPuzzle");
+
+    const puzzle = new Puzzle({ container });
+
+    puzzle.srcImage = img;
+    puzzle.nbPieces = pieces;
+    puzzle.imageLoaded = true;
+
+    // Required sequence
+    puzzle.create();
+    puzzle.scale();
+    setTimeout(() => {
+  puzzle.polyPieces?.[0]?.drawImage?.();
+}, 100);
+    window.activePuzzle = puzzle;
+
+    console.log("🧩 Puzzle created and scaled with image.");
+  };
+
+});
+
+document.addEventListener('DOMContentLoaded', function() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const imageUrl = urlParams.get('imageUrl');
+    const pieces = urlParams.get('pieces');
+    
+    if (imageUrl && pieces) {
+        // First, set the image
+        // This depends on how your code loads images - it might need adjustment
+        const puzzleImg = document.querySelector('#puzzleImg') || document.querySelector('img');
+        if (puzzleImg) puzzleImg.src = imageUrl;
+        
+        // Find and click the appropriate pieces menu item
+        setTimeout(() => {
+            // Look for the li element containing the pieces text
+            const pieceItems = document.querySelectorAll('#menu li');
+            let pieceItem = null;
+            
+            // Find the closest pieces option
+            const piecesOptions = [12, 25, 50, 100, 200, 500, 1000];
+            const targetPieces = parseInt(pieces);
+            const closestPieces = piecesOptions.reduce((prev, curr) => 
+                Math.abs(curr - targetPieces) < Math.abs(prev - targetPieces) ? curr : prev
+            );
+            
+            // Find and click the closest piece option
+            pieceItems.forEach(item => {
+                if (item.textContent.includes(closestPieces + ' pieces')) {
+                    console.log('Clicking on piece option:', item.textContent);
+                    item.click();
+                }
+            });
+        }, 500); // Give some time for the page to initialize
+    }
+});
+</script>
 </body>
 </html>
 
