@@ -1,236 +1,94 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jigzzy Level Map</title>
-    <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f0f8ff;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            min-height: 100vh;
-        }
-        
-        header {
-            background-color: #4a90e2;
-            color: white;
-            width: 100%;
-            text-align: center;
-            padding: 20px 0;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        }
-        
-        .container {
-            width: 80%;
-            max-width: 1200px;
-            margin: 20px auto;
-            padding: 20px;
-        }
-        
-        h1 {
-            margin: 0;
-            font-size: 2.5em;
-        }
-        
-        .map-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            margin-top: 30px;
-            position: relative;
-            background: url('/api/placeholder/800/600') center/cover;
-            border-radius: 15px;
-            padding: 40px;
-            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
-        }
-        
-        .levels {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 30px;
-            max-width: 800px;
-        }
-        
-        .level {
-            position: relative;
-            width: 120px;
-            height: 120px;
-            background-color: #fff;
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 24px;
-            font-weight: bold;
-            color: #333;
-            cursor: pointer;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-            transition: all 0.3s ease;
-            border: 4px solid #4a90e2;
-        }
-        
-        .level:hover {
-            transform: scale(1.1);
-            box-shadow: 0 6px 12px rgba(0,0,0,0.3);
-            background-color: #e9f5ff;
-        }
-        
-        .level.locked {
-            background-color: #ccc;
-            cursor: not-allowed;
-            border: 4px solid #888;
-        }
-        
-        .level.locked:hover {
-            transform: none;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-        }
-        
-        .preview {
-            margin-top: 40px;
-            text-align: center;
-            display: none;
-        }
-        
-        .preview img {
-            max-width: 300px;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-        }
-        
-        .preview button {
-            margin-top: 20px;
-            padding: 12px 30px;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            font-size: 18px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-        
-        .preview button:hover {
-            background-color: #45a049;
-        }
-        
-        .path {
-            position: absolute;
-            z-index: 0;
-            width: 80%;
-            height: 10px;
-            background-color: #d0d0d0;
-            border-radius: 5px;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <title>Jigzzy Map</title>
+  <link rel="icon" href="https://i.ibb.co/F4r11KFG/icon.png" type="image/x-icon">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Orbitron -->
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body {
+      font-family: 'Orbitron', sans-serif;
+    }
+  </style>
 </head>
 <body>
-    <header>
-        <h1>Jigzzy Puzzle Adventure</h1>
-        <p>Select a level to begin your puzzle journey!</p>
-    </header>
-    
-    <div class="container">
-        <div class="map-container">
-            <div class="levels">
-                <!-- Replace these image URLs with your actual puzzle images -->
-                <div class="level" data-level="1" data-image="./preslav.jpg" data-piece="100">1</div>
-                <div class="level" data-level="2" data-image="./36969.png" data-piece="100">2</div>
-                <div class="level" data-level="3" data-image="https://source.unsplash.com/random/600x400?animals" data-piece="100">3</div>
-                <div class="level locked" data-level="4" data-image="https://source.unsplash.com/random/600x400?food" data-piece="100">4</div>
-                <div class="level locked" data-level="5" data-image="https://source.unsplash.com/random/600x400?travel" data-piece="100">5</div>
-                <div class="level locked" data-level="6" data-image="https://source.unsplash.com/random/600x400?art" data-piece="100">6</div>
-                <div class="level locked" data-level="7" data-image="https://source.unsplash.com/random/600x400?space" data-piece="100">7</div>
-                <div class="level locked" data-level="8" data-image="https://source.unsplash.com/random/600x400?architecture" data-piece="100">8</div>
-                <div class="level locked" data-level="9" data-image="https://source.unsplash.com/random/600x400?abstract" data-piece="100">9</div>
-            </div>
-        </div>
-        
-        <div class="preview" id="levelPreview">
-            <h2>Level <span id="levelNumber">1</span></h2>
-            <img id="previewImage" src="/api/placeholder/500/500" alt="Level preview">
-            <p>Ready to solve this puzzle?</p>
-            <p>Choose your difficulty:</p>
-            <div id="difficultyButtons">
-            <button data-pieces="50">Easy</button>
-            <button data-pieces="100">Medium</button>
-            <button data-pieces="500">Hard</button>
-            <button data-pieces="1000">Extreme</button>
-            </div>
-        </div>
+  <div class="container">
+    <h1>Select Your Puzzle</h1>
+    <div class="map-grid">
+
+      <!-- Puzzle Card 1 -->
+      <div class="map-item">
+        <a href="Jiggzy.html?imageUrl=./assets/pzlmapimg/1.jpg&pieces=250" class="button">
+          <img src="./assets/pzlmapimg/1.jpg" alt="1">
+          <p>250-Pieces</p>
+        </a>
+      </div>
+
+      <!-- Puzzle Card 2 -->
+      <div class="map-item">
+        <a href="Jiggzy.html?imageUrl=./assets/pzlmapimg/2.jpg&pieces=250" class="button">
+          <img src="./assets/pzlmapimg/2.jpg" alt="2">
+          <p>250-Pieces</p>
+        </a>
+      </div>
+
+      <!-- Puzzle Card 3 -->
+      <div class="map-item">
+        <a href="Jiggzy.html?imageUrl=./assets/pzlmapimg/3.jpg&pieces=250" class="button">
+          <img src="./assets/pzlmapimg/3.jpg" alt="3">
+          <p>250-Pieces</p>
+        </a>
+      </div>
+
+      <!-- Puzzle Card 4 -->
+      <div class="map-item">
+        <a href="Jiggzy.html?imageUrl=./assets/pzlmapimg/4.jpg&pieces=250" class="button">
+          <img src="./assets/pzlmapimg/4.jpg" alt="4">
+          <p>250-Pieces</p>
+        </a>
+      </div>
+
+      <!-- Puzzle Card 5 -->
+      <div class="map-item">
+        <a href="Jiggzy.html?imageUrl=./assets/pzlmapimg/5.jpg&pieces=250" class="button">
+          <img src="./assets/pzlmapimg/5.jpg" alt="5">
+          <p>250-Pieces</p>
+        </a>
+      </div>
+
+      <!-- Puzzle Card 6 -->
+      <div class="map-item">
+        <a href="Jiggzy.html?imageUrl=./assets/pzlmapimg/6.jpg&pieces=250" class="button">
+          <img src="./assets/pzlmapimg/6.jpg" alt="6">
+          <p>250-Pieces</p>
+        </a>
+      </div>
+
+      <!-- Puzzle Card 7 -->
+      <div class="map-item">
+        <a href="Jiggzy.html?imageUrl=./assets/pzlmapimg/7.jpg&pieces=250" class="button">
+          <img src="./assets/pzlmapimg/7.jpg" alt="7">
+          <p>250-Pieces</p>
+        </a>
+      </div>
+      
+      <!-- Puzzle Card 8 -->
+      <div class="map-item">
+        <a href="Jiggzy.html?imageUrl=./assets/pzlmapimg/8.jpg&pieces=250" class="button">
+          <img src="./assets/pzlmapimg/8.jpg" alt="7">
+          <p>250-Pieces</p>
+        </a>
+      </div>
+
     </div>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const levels = document.querySelectorAll('.level:not(.locked)');
-            const preview = document.getElementById('levelPreview');
-            const levelNumber = document.getElementById('levelNumber');
-            const previewImage = document.getElementById('previewImage');
-            const startButton = document.getElementById('startButton');
-            
-            let selectedLevel = null;
-            let selectedImageUrl = null;
-            
-            levels.forEach(level => {
-                level.addEventListener('click', function() {
-                    selectedLevel = this.getAttribute('data-level');
-                    selectedImageUrl = this.getAttribute('data-image');
-                    
-                    // Update preview
-                    levelNumber.textContent = selectedLevel;
-                    previewImage.src = selectedImageUrl;
-                    preview.style.display = 'block';
-                    
-                    // Scroll to preview
-                    preview.scrollIntoView({behavior: 'smooth'});
-                });
-            });
-            
-            const difficultyButtons = document.querySelectorAll('#difficultyButtons button');
-
-difficultyButtons.forEach(button => {
-  button.addEventListener('click', function () {
-    const selectedPieces = this.getAttribute('data-pieces');
-
-    const form = document.createElement('form');
-    form.method = 'GET';
-    form.action = 'Jiggzy.html';
-
-    const levelInput = document.createElement('input');
-    levelInput.type = 'hidden';
-    levelInput.name = 'level';
-    levelInput.value = selectedLevel;
-    form.appendChild(levelInput);
-
-    const imageInput = document.createElement('input');
-    imageInput.type = 'hidden';
-    imageInput.name = 'imageUrl';
-    imageInput.value = selectedImageUrl;
-    form.appendChild(imageInput);
-
-    const piecesInput = document.createElement('input');
-    piecesInput.type = 'hidden';
-    piecesInput.name = 'pieces';
-    piecesInput.value = selectedPieces;
-    form.appendChild(piecesInput);
-
-    document.body.appendChild(form);
-    form.submit();
-  });
-});
-        });
-        function redirect(imageUrl) {
-    const difficulty = document.getElementById('difficulty').value;
-    localStorage.setItem('selectedImage', imageUrl);
-    localStorage.setItem('selectedDifficulty', difficulty);
-    window.location.href = 'Jiggzy.html';
-}
-    </script>
+    <div class="footer">
+      <p>&copy; 2025 Jigzzy Puzzle World</p>
+    </div>
+  </div>
+  <script src="./map.js"></script>
 </body>
 </html>
